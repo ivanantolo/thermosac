@@ -33,7 +33,7 @@ Four example scripts (`ex_01_GMixScanner.py` to `ex_04_HighThroughput-Tracing.py
    pip install .
    ```
 
-Python 3.12 or later is required as indicated in the project configuration【F:pyproject.toml†L1-L10】.
+Python 3.12 or later is required.
 
 ## Quick start
 The snippet below mirrors the single-system scanning routine used for the paper's Figure 2.
