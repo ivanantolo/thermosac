@@ -1,0 +1,25 @@
+[project]
+name = "thermosac"
+version = "0.0.2.dev1"
+description = "High-throughput LLE prediction and screening using the COSMO-SAC model"
+readme = "README.md"
+authors = [
+    { name = "Ivan Antolovic", email = "62339319+ivanantolo@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+sources = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/thermosac"]
+exclude = ["src/thermosac/data/**"]
+
+[tool.hatch.build.targets.sdist]
+packages = ["src/thermosac"]
+
