@@ -26,7 +26,7 @@ Four example scripts (`ex_01_GMixScanner.py` to `ex_04_HighThroughput-Tracing.py
    ```
    pip install thermosac
    ```
-   or clone the repository and install locally:
+   ⚠️ **Note:** The PyPI version includes only the core package functionality. Example data and auxiliary files (e.g., `data/profiles`) required for full reproducibility and examples are **not** included in the pip package to keep it lightweight. To access these materials, please clone the repository:
    ```
    git clone https://github.com/ivanantolo/thermosac
    cd thermosac
