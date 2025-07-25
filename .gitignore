@@ -10,4 +10,4 @@ wheels/
 .venv
 
 # Folders
-figures/
+/figures/
