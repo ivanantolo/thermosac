@@ -3,8 +3,9 @@ import pandas as pd
 import numpy as np
 
 # 1. Load data (semicolon-delimited)
-df = pd.read_csv('stats-SAC_2010.csv', sep=';')
-df = pd.read_csv('stats-SAC_dsp.csv', sep=';')
+dispersion = False
+model = 'SAC_dsp' if dispersion else 'SAC_2010'
+df = pd.read_csv(f'stats-{model}.csv', sep=';')
 
 # 2. Classify each system as Aqueous if either component is water
 is_water = df['c1'].str.contains('Water', case=False, na=False) | \
@@ -27,6 +28,7 @@ for grp in ['Nonaqueous', 'Aqueous']:
 results['Overall'] = compute_stats(df)
 
 # ─── 4. Print table
+print(f'Model variant: COSMO-{model}')
 print(f"{'Group':<12}{'Systems':>10}{'Points':>10}{'%AALDS':>12}")
 print('-' * 44)
 for grp, (n_sys, n_pts, aalds) in results.items():
