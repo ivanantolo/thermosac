@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
-# lle_to_csv.py  –  wandelt TRC-LLE-ASCII-Export in eine Excel-taugliche CSV
 
-from __future__ import annotations
 import re, sys
 from pathlib import Path
 from typing import List, Dict
 import pandas as pd
 
 # ---------------------------------------------------------
-LLE_FILE = "LLeDbPGL6ed96b.txt"   # ggf. Pfad/Name anpassen
-CSV_SEP  = ";"                    # deutsches Excel-Trennzeichen
+LLE_FILE = "LLeDbPGL6ed96b.txt"   # optionally adjust Path/Name
+CSV_SEP  = ";"                    # CSV-Separator
 # ---------------------------------------------------------
 
 HDR_RE = re.compile(r'^\s*99\s+13\s+(\d+)\s+(\d+)(?:\s+!\s*(.+))?')
 
 def cas_hyphen(raw: str | int) -> str:
-    """7732185  →  7732-18-5"""
+    """7732185  -->  7732-18-5"""
     s = str(raw)
     return f"{int(s[:-3])}-{s[-3:-1]}-{s[-1]}"
 
@@ -28,7 +26,7 @@ def split_names(desc: str | None) -> List[str]:
 def parse_lle(path: Path) -> pd.DataFrame:
     txt = path.read_text(encoding="utf-8", errors="ignore")
 
-    rows: List[Dict] = []           # hier lag der Syntaxfehler
+    rows: List[Dict] = []
     cas_name: Dict[str, str] = {}
 
     for block in txt.split("*** Next ***"):
@@ -44,7 +42,7 @@ def parse_lle(path: Path) -> pd.DataFrame:
         cas1_raw, cas2_raw = cas1_raw.strip(), cas2_raw.strip()
         names = split_names(desc)
 
-        # Mapping CAS → Name ergänzen
+        # Mapping CAS --> Name
         if len(names) >= 1:
             cas_name.setdefault(cas1_raw, names[0])
         if len(names) >= 2:
@@ -58,17 +56,17 @@ def parse_lle(path: Path) -> pd.DataFrame:
             if len(toks) < 5:
                 continue
             try:
-                T, P, phase, x1, x2 = map(float, toks[:5])
+                T, P, phase, x1_L1, x1_L2 = map(float, toks[:5])
             except ValueError:
                 continue
-            meta = " ".join(toks[5:]) if len(toks) > 5 else ""
+            source = " ".join(toks[5:]) if len(toks) > 5 else ""
             rows.append(dict(
                 cas1=cas_hyphen(cas1_raw),
                 name1=cas_name.get(cas1_raw, ""),
                 cas2=cas_hyphen(cas2_raw),
                 name2=cas_name.get(cas2_raw, ""),
                 T_K=T, P_kPa=P, phase=int(phase),
-                x1=x1, x2=x2, meta=meta
+                x1_L1=x1_L1, x1_L2=x1_L2, source=source
             ))
 
     return pd.DataFrame(rows)
@@ -76,12 +74,12 @@ def parse_lle(path: Path) -> pd.DataFrame:
 def main() -> None:
     in_path = Path(LLE_FILE)
     if not in_path.exists():
-        sys.exit(f"[error] Eingabedatei '{LLE_FILE}' nicht gefunden")
+        sys.exit(f"[error] Input file '{LLE_FILE}' not found")
 
     df = parse_lle(in_path)
     out_csv = in_path.with_suffix(".csv")
-    df.to_csv(out_csv, sep=CSV_SEP, index=False, float_format="%.6g")
-    print(f"[✓] {len(df):,} Zeilen → {out_csv}")
+    df.to_csv(out_csv, sep=CSV_SEP, index=False)
+    print(f"[x] {len(df):,} Rows --> {out_csv}")
 
 if __name__ == "__main__":
     main()
