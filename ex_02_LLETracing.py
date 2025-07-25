@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # Add annotations
     kwargs = dict(va='top', transform=ax.transAxes, color='k')
     bbox = dict(facecolor='yellow', alpha=0.9, edgecolor='none', pad=1)
-    ax.text(0.01, 1.01, f"COSMO-{model.replace('_', '-')}", bbox=bbox, ha='right', **kwargs)
+    ax.text(0.01, 1.01, f"COSMO-{model.replace('_', '-')}", bbox=bbox, ha='left', **kwargs)
     ax.text(0.99, 1.01, f"System={system:0>4}", bbox=bbox, ha='right', **kwargs)
 
     # Plot settings
