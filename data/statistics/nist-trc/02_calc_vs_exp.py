@@ -10,7 +10,7 @@ from thermosac.equilibrium import LLE
 # BASIC
 # =============================================================================
 CWD = Path(__file__).resolve().parent
-ROOT = CWD.parents[3]
+ROOT = CWD.parents[2]
 DIR_DDB = ROOT / Path('data/experimental/ddb')
 DIR_PROFILES = ROOT / Path("data/profiles/UD/sigma3")
 nr_to_sys = pd.read_csv(DIR_DDB / "systems.csv", sep=";")
@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
     # ─── Select systems for which to compute deviations ──────────────────────
     systems = approx.sys.unique()
-    systems = [3345, 2384]  # Example: only evaluate one system for demonstration
+    systems = [3345]  # Example: only evaluate one system for demonstration
 
     # ─── Compute deviations between calculated and experimental data ─────────
     calc_vs_exp = []

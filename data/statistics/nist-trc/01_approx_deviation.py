@@ -95,7 +95,7 @@ def add_metadata(data):
 # =============================================================================
 if __name__ == '__main__':
     # ─── Define root and data directories ────────────────────────────────────
-    ROOT = Path(__file__).resolve().parents[4]
+    ROOT = Path(__file__).resolve().parents[3]
     DIR_CALC = ROOT / Path('data/calculated/lle_results')
     DIR_EXP = ROOT / Path('data/experimental/nist-trc')
 

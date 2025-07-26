@@ -28,7 +28,9 @@ for grp in ['Nonaqueous', 'Aqueous']:
 results['Overall'] = compute_stats(df)
 
 # ─── 4. Print table
+print('-' * 44)
 print(f'Model variant: COSMO-{model}')
+print('-' * 44)
 print(f"{'Group':<12}{'Systems':>10}{'Points':>10}{'%AALDS':>12}")
 print('-' * 44)
 for grp, (n_sys, n_pts, aalds) in results.items():

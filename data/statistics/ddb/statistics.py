@@ -6,11 +6,11 @@ import numpy as np
 # === Control Panel ===
 def main():
     global stats
-    # stats = get_statistics(group='system', recalculate=True, save=True)
+    stats = get_statistics(group='system', recalculate=True, save=True)
     # stats = get_statistics(group='class_pair', recalculate=True, save=True)
     # stats = get_statistics(member='component', recalculate=True, save=True)
     # stats = get_statistics(member='class', recalculate=True, save=True)
-    stats = compute_total_aads_from_raw(save=True, restrict_by_direction=True)
+    # stats = compute_total_aads_from_raw(save=True, restrict_by_direction=True)
     pass
 
 def compute_total_aads_from_raw(save=True, file_path="stats_by_total_AAD.xlsx",
@@ -299,7 +299,7 @@ def apply_direction_filter(subset, df, var, restrict_by_direction=True):
 
 # === Run Main ===
 if __name__ == "__main__":
-    ROOT = Path('../..')
+    ROOT = Path(__file__).resolve().parents[3]
     DIR_STATS = ROOT / Path("statistics/calc_vs_exp")
     kwargs = dict(sheet_name=None, header=[0, 1], index_col=0)
     lle_vs_exp = pd.read_csv(DIR_STATS / "lle_vs_exp.csv", sep=';')

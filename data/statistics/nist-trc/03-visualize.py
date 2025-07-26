@@ -8,7 +8,7 @@ from contextlib import contextmanager
 # BASIC
 # =============================================================================
 CWD = Path(__file__).resolve().parent
-ROOT = CWD.parents[3]
+ROOT = CWD.parents[2]
 DIR_DDB = ROOT / Path('data/experimental/ddb')
 nr_to_sys = pd.read_csv(DIR_DDB / "systems.csv", sep=";")
 
@@ -171,6 +171,6 @@ if __name__ == '__main__':
             plot_calc_vs_exp(ax, deviation_lle)
             plot_calc_vs_exp(ax, deviation_dsp, c='r')
 
-        # save_plot(ax, system, output_dir=CWD/'./figures')
+        save_plot(ax, system, output_dir=CWD/'./figures')
 
-        break
+        break # Limit execution to the first system (for testing/debugging)
