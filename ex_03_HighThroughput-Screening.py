@@ -8,7 +8,7 @@ from pathlib import Path
 from thermosac.utils.spacing import spacing
 from utils.multi_scanner import GMixMultiScan
 from utils.helper import initialize_cosmo_model, convert_system_to_name, nr_to_sys
-from utils.helper import plot_details, save_figure
+from utils.plotter import plot_details, save_figure
 
 DIR_FIG = Path("./figures") / Path(__file__).stem.lower()
 

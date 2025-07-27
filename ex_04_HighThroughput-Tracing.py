@@ -7,7 +7,7 @@ from pathlib import Path
 from thermosac import Component, Mixture, COSMOSAC
 from utils.lle_generator import LLEGenerator
 from utils.helper import initialize_cosmo_model
-from utils.helper import plot_context, plot_curve, save_figure
+from utils.plotter import plot_context, plot_curve, save_figure
 
 DIR_PROFILES = Path("data/profiles/UD/sigma3")
 DIR_INITS = Path("data/calculated/initial_values")
