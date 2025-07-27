@@ -67,6 +67,7 @@ Additional examples are provided in the repository:
 - **ex_02_LLETracing.py** – trace liquid–liquid equilibria using initial values.
 - **ex_03_HighThroughput-Screening.py** – high-throughput binodal detection across multiple systems.
 - **ex_04_HighThroughput-Tracing.py** – parallelized LLE tracing for a list of systems.
+- **ex_05_EvaluateNISTBenchmark.py** – single-system benchmark evaluation using NIST/TRC data (basis of Table 5).
 
 Each script contains plotting commands and annotations for reproducing the figures used in the accompanying paper. For instance, the single-system tracing routine loads initial values and computes miscibility curves as shown in lines 27–33 of `ex_02_LLETracing.py`.
 
