@@ -72,7 +72,7 @@ Each script contains plotting commands and annotations for reproducing the figur
 
 ## Data and reproducibility
 
-The `data` directory bundles everything needed to reproduce the analyses:
+The `data` directory is included in the GitHub repository (but not in the PyPI package) and bundles everything needed to reproduce the analyses:
 
 - `data/calculated` – initial values, critical points and the full miscibility curves generated with ThermoSAC.
 - `data/experimental` – the lists of binary systems and substances used in the evaluation together with the curated reference set from the NIST Thermodynamics Research Center.
