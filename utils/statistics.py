@@ -57,7 +57,6 @@ def get_deviation(system, approx, dispersion, mode='sequential'):
         # simple list comprehension for sequential execution
         x_calc = []
         total = len(args)
-        print(f"System: {system:04d}")
         print("Calculating exact deviation...")
         for i, arg in enumerate(args, 1):
             x_calc.append(compute_x_with_init(arg))
@@ -211,7 +210,21 @@ def pre_process_dataframe(df):
     return res
 
 def approx_calc_vs_exp(df_calc, df_exp, polish=True):
-    dev_x = [get_deviation_x(df_calc, df_exp, phase) for phase in ['L1', 'L2']]
+    phases = ['L1', 'L2']
+    dev_x = []
+
+    total = len(phases)
+    print("Calculating approximate deviation...")
+    for i, phase in enumerate(phases, 1):
+        dev_x.append(get_deviation_x(df_calc, df_exp, phase))
+
+        # Progress bar
+        percent = (i / total) * 100
+        bar = f"[{'#' * int(percent // 2):<50}] {percent:6.2f}%"
+        print(f"\r{bar}", end='', flush=True)
+
+    print()  # move to new line after progress bar finishes
+
     calc_vs_exp = pd.concat(dev_x)
 
     if polish:
