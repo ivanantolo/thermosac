@@ -40,7 +40,7 @@ def compute_x_with_init(args):
         # Return NaN on failure
         return np.nan
 
-def get_deviatioin(system, approx, dispersion, mode='sequential'):
+def get_deviation(system, approx, dispersion, mode='sequential'):
     # Filter the approximation data for the specified system
     calc_vs_exp = approx[approx.sys == system].copy()
     rows = calc_vs_exp.to_dict(orient='records')
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     calc_vs_exp = []
     for i, system in enumerate(systems):
         print(f"{i+1}: {system:04d} ...", end="", flush=True)
-        deviation = get_deviatioin(system, **options, mode='sequential') # 'sequential' | 'parallel'
+        deviation = get_deviation(system, **options, mode='sequential') # 'sequential' | 'parallel'
         calc_vs_exp.append(deviation)
         print(" finished")
         # break  # Limit execution to the first system (for testing/debugging)
