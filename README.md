@@ -17,7 +17,7 @@ ThermoSAC is a Python package for studying phase equilibria with the COSMO‑SAC
 - **Support for COSMO‑SAC‑2010 and COSMO‑SAC‑dsp**, matching the variants assessed in the paper.
 - **Precomputed results** in `data/calculated` including initial values and full miscibility curves.
 
-Four example scripts (`ex_01_GMixScanner.py` to `ex_05_EvaluateNISTBenchmark.py`) demonstrating typical workflows.
+Five example scripts (`ex_01_GMixScanner.py` to `ex_05_EvaluateNISTBenchmark.py`) demonstrating typical workflows.
 
 ## Installation
 
