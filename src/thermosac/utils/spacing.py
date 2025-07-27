@@ -62,8 +62,6 @@ def spacing(
     """
     if num <= 0:
         raise ValueError("'num' must be a positive integer")
-    if min_value >= max_value:
-        raise ValueError("'min_value' must be less than 'max_value'")
 
     if log_scale:
         min_value, max_value = 10**min_value, 10**max_value
