@@ -91,78 +91,96 @@ def add_metadata(data):
         name = data['sys'].map(sys_ID[src])
         data.insert(pos + offset, col, name)
 
-def calculate_log_deviation(data):
-    # Calculate logarithmic deviation (ALDS)
+def compute_alds(data: pd.DataFrame) -> pd.Series:
+    """
+    Compute per-point logarithmic deviation (ALDS, %) on the dilute-component basis.
+    If experimental x1 > 0.5, complements (1 - x) are used for both reference and calc.
+    Returns a Series aligned with data's index.
+    """
+    # decide which predicted column to use
     if 'x1_calc' in data.columns:
-        x_calc = data['x1_calc']
+        x_calc = data['x1_calc'].to_numpy(dtype=float)
     elif 'x1_approx' in data.columns:
-        x_calc = data['x1_approx']
+        x_calc = data['x1_approx'].to_numpy(dtype=float)
     else:
         raise ValueError("Data must contain either 'x1_calc' or 'x1_approx' column.")
-    data['ALDS'] = np.abs(np.log(x_calc / data.x1)) * 100
+
+    x_ref = data['x1'].to_numpy(dtype=float)
+
+    # map to dilute component basis
+    use_complement = x_ref > 0.5
+    x_ref_dil = np.where(use_complement, 1.0 - x_ref, x_ref)
+    x_calc_dil = np.where(use_complement, 1.0 - x_calc, x_calc)
+
+    # numerical safety
+    eps = 1e-12
+    x_ref_dil = np.clip(x_ref_dil, eps, 1.0 - eps)
+    x_calc_dil = np.clip(x_calc_dil, eps, 1.0 - eps)
+
+    alds = np.abs(np.log(x_calc_dil / x_ref_dil)) * 100.0
+    return pd.Series(alds, index=data.index, name="ALDS")
+
+def calculate_log_deviation(data):
+    # Calculate logarithmic deviation (ALDS)
+    data['ALDS'] = compute_alds(data)
 
     return data
 
 
-def print_aalds(stats, dispersion: bool = False):
+def print_aalds(stats: pd.DataFrame, dispersion: bool = False):
     """
     Loads binodal deviation data, classifies systems as Aqueous/Nonaqueous,
-    computes AALDS statistics, and prints a formatted summary table.
-
-    Args:
-        dispersion (bool): Whether to use dispersion-corrected model (SAC_dsp) or not (SAC_2010).
+    computes AALDS (%) using the dilute-component basis (via compute_alds),
+    and prints a formatted summary table.
     """
-    # Load data
     model = 'COSMO-SAC-dsp' if dispersion else 'COSMO-SAC-2010'
+
+    # Work on a copy to avoid mutating caller's DataFrame
+    stats = stats.copy()
 
     # Classify as aqueous if either component is water
     is_water = stats['c1'].str.contains('Water', case=False, na=False) | \
                stats['c2'].str.contains('Water', case=False, na=False)
     stats['system_type'] = np.where(is_water, 'Aqueous', 'Nonaqueous')
 
-    # Compute statistics helper
     def compute_stats(sub: pd.DataFrame):
-        # Determine which column to use for predicted x1
+        # Decide which predicted column is present
         if 'x1_calc' in sub.columns:
-            x_calc = sub['x1_calc']
+            x_col = 'x1_calc'
         elif 'x1_approx' in sub.columns:
-            x_calc = sub['x1_approx']
+            x_col = 'x1_approx'
         else:
             raise ValueError("Data must contain either 'x1_calc' or 'x1_approx' column.")
 
-        # Drop rows with missing values
-        sub = sub.dropna(subset=['x1', x_calc.name])
-        x_ref = sub['x1']
-        x_calc = sub[x_calc.name]
+        # Keep only rows where ALDS can be computed
+        valid = sub.dropna(subset=['x1', x_col])
 
-        n_points = len(sub)
-        n_systems = sub['sys'].nunique()
-
+        n_points = len(valid)
+        n_systems = valid['sys'].nunique() if 'sys' in valid.columns else np.nan
         if n_points == 0:
             return n_systems, 0, np.nan
 
-        # Compute AALDS
-        devs = np.abs(np.log(x_calc / x_ref))
-        aalds = devs.mean() * 100
+        # Reuse the shared per-point ALDS (%) and average it
+        aalds_percent = float(compute_alds(valid).mean())
 
-        return n_systems, n_points, aalds
+        return n_systems, n_points, aalds_percent
 
     # Compute stats per group
     results = {
         'Nonaqueous': compute_stats(stats[stats['system_type'] == 'Nonaqueous']),
-        'Aqueous': compute_stats(stats[stats['system_type'] == 'Aqueous']),
-        'Overall': compute_stats(stats)
+        'Aqueous':    compute_stats(stats[stats['system_type'] == 'Aqueous']),
+        'Overall':    compute_stats(stats)
     }
 
     # Print formatted table
     print('-' * 44)
-    print(f'Model variant: COSMO-{model}')
+    print(f'Model variant: {model}')
     print('-' * 44)
     print(f"{'Group':<12}{'Systems':>10}{'Points':>10}{'%AALDS':>12}")
     print('-' * 44)
     for grp, (n_sys, n_pts, aalds) in results.items():
         a_str = f"{aalds:12.2f}" if not np.isnan(aalds) else f"{'n/a':>12}"
-        print(f"{grp:<12}{n_sys:10d}{n_pts:10d}{a_str:12}")
+        print(f"{grp:<12}{int(n_sys) if not np.isnan(n_sys) else 0:10d}{n_pts:10d}{a_str}")
 
 
 # =============================================================================

@@ -14,30 +14,51 @@ df['system_type'] = np.where(is_water, 'Aqueous', 'Nonaqueous')
 
 # Compute statistics helper
 def compute_stats(sub: pd.DataFrame):
+    """
+    Compute AALDS (%) using the PG&L convention: deviations are always taken for the
+    dilute component. For each row, if the experimental x1 (x_ref) is > 0.5, switch
+    to the complement (1 - x) for both reference and calculated values.
+
+    Returns:
+        (n_systems, n_points, aalds_percent)
+    """
     # Determine which column to use for predicted x1
     if 'x1_calc' in sub.columns:
-        x_calc = sub['x1_calc']
+        x_col = 'x1_calc'
     elif 'x1_approx' in sub.columns:
-        x_calc = sub['x1_approx']
+        x_col = 'x1_approx'
     else:
         raise ValueError("Data must contain either 'x1_calc' or 'x1_approx' column.")
 
-    # Drop rows with missing values
-    sub = sub.dropna(subset=['x1', x_calc.name])
-    x_ref = sub['x1']
-    x_calc = sub[x_calc.name]
+    # Drop rows with missing values in required columns
+    sub = sub.dropna(subset=['x1', x_col])
 
     n_points = len(sub)
-    n_systems = sub['sys'].nunique()
-
+    n_systems = sub['sys'].nunique() if 'sys' in sub.columns else np.nan
     if n_points == 0:
         return n_systems, 0, np.nan
 
-    # Compute AALDS
-    devs = np.abs(np.log(x_calc / x_ref))
-    aalds = devs.mean() * 100
+    # Extract experimental and calculated mole fractions of component 1
+    x_ref = sub['x1'].to_numpy(dtype=float)
+    x_calc = sub[x_col].to_numpy(dtype=float)
+
+    # Map to the dilute component basis:
+    # if experimental x_ref > 0.5, use complements for BOTH ref and calc
+    use_complement = x_ref > 0.5
+    x_ref_dil = np.where(use_complement, 1.0 - x_ref, x_ref)
+    x_calc_dil = np.where(use_complement, 1.0 - x_calc, x_calc)
+
+    # Numerical safety: clip away from 0 and 1 to avoid log(0) or division by ~0
+    eps = 1e-12
+    x_ref_dil = np.clip(x_ref_dil, eps, 1.0 - eps)
+    x_calc_dil = np.clip(x_calc_dil, eps, 1.0 - eps)
+
+    # Compute AALDS (%)
+    devs = np.abs(np.log(x_calc_dil / x_ref_dil))
+    aalds = float(devs.mean() * 100.0)
 
     return n_systems, n_points, aalds
+
 
 results = {}
 for grp in ['Nonaqueous', 'Aqueous']:

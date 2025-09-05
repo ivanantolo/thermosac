@@ -67,6 +67,35 @@ def get_deviation_x(df_calc, df_exp, phase='L1'):
 
     return exp
 
+def compute_alds(data: pd.DataFrame) -> pd.Series:
+    """
+    Compute per-point logarithmic deviation (ALDS, %) on the dilute-component basis.
+    If experimental x1 > 0.5, complements (1 - x) are used for both reference and calc.
+    Returns a Series aligned with data's index.
+    """
+    # decide which predicted column to use
+    if 'x1_calc' in data.columns:
+        x_calc = data['x1_calc'].to_numpy(dtype=float)
+    elif 'x1_approx' in data.columns:
+        x_calc = data['x1_approx'].to_numpy(dtype=float)
+    else:
+        raise ValueError("Data must contain either 'x1_calc' or 'x1_approx' column.")
+
+    x_ref = data['x1'].to_numpy(dtype=float)
+
+    # map to dilute component basis
+    use_complement = x_ref > 0.5
+    x_ref_dil = np.where(use_complement, 1.0 - x_ref, x_ref)
+    x_calc_dil = np.where(use_complement, 1.0 - x_calc, x_calc)
+
+    # numerical safety
+    eps = 1e-12
+    x_ref_dil = np.clip(x_ref_dil, eps, 1.0 - eps)
+    x_calc_dil = np.clip(x_calc_dil, eps, 1.0 - eps)
+
+    alds = np.abs(np.log(x_calc_dil / x_ref_dil)) * 100.0
+    return pd.Series(alds, index=data.index, name="ALDS")
+
 def add_metadata(data):
     file = ROOT / 'data/experimental/ddb/systems.csv'
     sys_ID = pd.read_csv(file, sep=';', index_col='sys')
@@ -79,13 +108,7 @@ def add_metadata(data):
         data.insert(pos + offset, col, name)
 
     # Calculate logarithmic deviation (ALDS)
-    if 'x1_calc' in data.columns:
-        x_calc = data['x1_calc']
-    elif 'x1_approx' in data.columns:
-        x_calc = data['x1_approx']
-    else:
-        raise ValueError("Data must contain either 'x1_calc' or 'x1_approx' column.")
-    data['ALDS'] = np.abs(np.log(x_calc / data.x1)) * 100
+    data['ALDS'] = compute_alds(data)
 
     return data
 
