@@ -1,6 +1,6 @@
 [project]
 name = "thermosac"
-version = "0.0.2.dev1"
+version = "0.1.0"
 description = "High-throughput LLE prediction and screening using the COSMO-SAC model"
 readme = "README.md"
 authors = [
