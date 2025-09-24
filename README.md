@@ -4,7 +4,7 @@
   <img src=https://github.com/ivanantolo/thermosac/raw/main/TOC.png alt="TOC Figure" width="500"/>
 </p>
 
-ThermoSAC is a Python package for studying phase equilibria with the COSMO‑SAC model. The project accompanies the paper *High‑Throughput Application and Evaluation of the COSMO‑SAC Model for Predictions of Liquid–Liquid Equilibria* currently under review in *Digital Discovery*. It provides tools to analyse miscibility, solubility and phase stability of binary mixtures and reproduces the automated workflow described in the article.
+ThermoSAC is a Python package for studying phase equilibria with the COSMO-SAC model. The project accompanies the paper [*High-Throughput Application and Evaluation of the COSMO-SAC Model for Predictions of Liquid–Liquid Equilibria*](https://doi.org/10.1039/D5DD00259A) published in *Digital Discovery*. It provides tools to analyse miscibility, solubility and phase stability of binary mixtures and reproduces the automated workflow described in the article.
 
 ## Features
 
@@ -84,7 +84,19 @@ These files allow you to reproduce the statistical analyses and figures presente
 
 ## Citation
 
-If you use ThermoSAC in your research, please cite the forthcoming paper once published. A `CITATION.cff` file will be added after publication.
+If you find ThermoSAC useful in your research, please consider citing the associated publication. This helps acknowledge the work and supports further development of the package.  
+
+```bibtex
+@article{Antolovic2025ThermoSAC,
+  title={High-throughput application and evaluation of the COSMO-SAC model for predictions of liquid--liquid equilibria},
+  author={Antolović, Ivan and Stephan, Simon and Vrabec, Jadran},
+  journal={Digital Discovery},
+  year={2025},
+  doi={10.1039/D5DD00259A}
+}
+```
+
+A `CITATION.cff` file will be updated once volume, issue, and page numbers are available, so that GitHub can automatically generate citation formats (APA, BibTeX, etc.).
 
 ## Contributing
 
